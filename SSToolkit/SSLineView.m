@@ -20,7 +20,6 @@
 - (void)dealloc {
 	self.lineColor = nil;
 	self.insetColor = nil;
-	[super dealloc];
 }
 
 
@@ -45,20 +44,30 @@
 - (void)drawRect:(CGRect)rect {	
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	CGContextClipToRect(context, rect);
-	CGContextSetLineWidth(context, 2.0f);
 
 	// Inset
 	if (self.showInset && self.insetColor) {
+		CGContextSetLineWidth(context, rect.size.height/2);
 		CGContextSetStrokeColorWithColor(context, _insetColor.CGColor);
-		CGContextMoveToPoint(context, 0.0f, 1.0f);
-		CGContextAddLineToPoint(context, rect.size.width, 1.0f);
+		CGContextMoveToPoint(context, 0.0f, rect.size.height*3/4);
+		CGContextAddLineToPoint(context, rect.size.width, rect.size.height*3/4);
 		CGContextStrokePath(context);
 	}
 	
 	// Top border
+	if (!self.showInset)
+		CGContextSetLineWidth(context, rect.size.height); // take full height in stroke if not showing inset
+	else
+		CGContextSetLineWidth(context, rect.size.height/2); // take full height in stroke if not showing inset
 	CGContextSetStrokeColorWithColor(context, _lineColor.CGColor);
-	CGContextMoveToPoint(context, 0.0f, 0.0f);
-	CGContextAddLineToPoint(context, rect.size.width, 0.0f);
+	if (!self.showInset) {
+		CGContextMoveToPoint(context, 0.0f, rect.size.height/2);
+		CGContextAddLineToPoint(context, rect.size.width, rect.size.height/2);
+	}
+	else {
+		CGContextMoveToPoint(context, 0.0f, rect.size.height/4);
+		CGContextAddLineToPoint(context, rect.size.width, rect.size.height/4);
+	}
 	CGContextStrokePath(context);
 }
 
